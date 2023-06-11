@@ -72,11 +72,11 @@ def client_program():
     dataToSend['data']['sequence'] = sequence
     dataToSend['header']['MAC'] = getMac()
     print('\n')
-    print('Sending:', dataToSend['data'])
+    print('Sending:', json.dumps(dataToSend['data'], indent=4))
 
     # Send and receive data from server
     response, dataToSend = sendReceiveData(client_socket, dataToSend)
-    print('Received:', response)
+    print('Received:', json.dumps(response, indent=4))
     print('\n')
 
     # if authencation failed and server send close message then close connection
@@ -107,7 +107,7 @@ def client_program():
                     dataToSend['data']['sequence'] = sequence
                     # dataToSend['data']['sequence'] = str(int(dataToSend['data']['sequence']) + 1)
                     dataToSend['data']['isConnectionClose'] = 'True'
-                    print('Sending:', dataToSend['data'])
+                    print('Sending:', json.dumps(dataToSend['data'], indent=4))
                     client_socket.write(
                         bytes(str(dataToSend), encoding="utf-8"))  # send message
                     # client_socket.close()
@@ -119,7 +119,7 @@ def client_program():
                 sequence = sequence + 1
                 dataToSend['data']['sequence'] = sequence
                 # dataToSend['data']['sequence'] = str(int(dataToSend['data']['sequence']) + 1)
-                print('Sending:', dataToSend['data'])
+                print('Sending:', json.dumps(dataToSend['data'], indent=4))
                 # Send and receive data from server
                 dataResponse, dataToSend = sendReceiveData(client_socket, dataToSend)
 
@@ -129,7 +129,7 @@ def client_program():
                     client_socket.close()  # close the connection
                     break
 
-                print('Received:', dataResponse['data'])
+                print('Received:', json.dumps(dataResponse, indent=4))
                 
                 if('key1' in dataResponse['data']):
                     print('Key refreshed from server')
@@ -137,7 +137,7 @@ def client_program():
                     # encryption algorithm
                     obj_dec = encryption(key1, key2)
                 
-                decrypted = obj_dec.decrypt(convertIntToByte(dataResponse['data']['data']))
+                decrypted = obj_dec.decrypt(convertIntToByte(patternToDecrypt(dataResponse['data']['data'])))
                 print(f"Decrypted data received in DATA_RESPONSE: {decrypted.decode('utf-8')}")
                 print('\n')
                 # sleep for 30 second

@@ -3,12 +3,14 @@ import json
 import random
 import string
 import hashlib
-from Crypto.Cipher import AES
 import ssl
 import uuid
-import jwt
 import sys
 import os
+
+# external Library
+import jwt
+from Crypto.Cipher import AES
 
 keyFile = "./priv.pem"  # provide full path to the private key file location
 certFile = "./cert.crt"  # provide full path to the Certificate file location
@@ -94,7 +96,7 @@ def server_program():
         # append client request in messages list
         messages.append(clientDataDict)
         # print("from connected user: " + str(clientDataDict['data']['message-type']))
-        print('RECEIVED:', clientDataDict['data'])
+        print('Received:', json.dumps(clientDataDict, indent=4))
         print('\n')
 
         # make response data dictionary
@@ -108,10 +110,10 @@ def server_program():
         # reply = input(' -> ')
 
         # If request contain unvalid sesssion id then authencate user and add new session
-        if ((not 'sessionId' in clientDataDict['data']) or (('sessionId' in clientDataDict['data']) and len([session for session in sessions if (('id' in session) and (session['id'] == 1))]) < 1)):
+        if ((not 'sessionId' in clientDataDict['data'])):
             
             # check username and password received from client
-            if((('username' in clientDataDict['data'] and clientDataDict['data']['username'] != userData["username"]) or ('password' in clientDataDict['data'] and clientDataDict['data']['password'] != userData["password"])) ):
+            if((not 'username' in clientDataDict['data']) or (not 'password' in clientDataDict['data']) or (('username' in clientDataDict['data'] and clientDataDict['data']['username'] != userData["username"]) or ('password' in clientDataDict['data'] and clientDataDict['data']['password'] != userData["password"])) ):
                 print('Authencation Failed')
                 # Authencation Failes, Username or password not matched
                 responseData['data']['isAuthencatedUser'] = 'false'
@@ -140,6 +142,14 @@ def server_program():
                 responseData['data']['key1'] = patternToEncrypt(int.from_bytes(KEY, "big"))
                 responseData['data']['key2'] = patternToEncrypt(int.from_bytes(IV, "big"))
                 responseData['data']['token'] = token
+
+        # If sessionid doed not match and user has not pass username and password
+        elif(('sessionId' in clientDataDict['data']) and (len([session for session in sessions if (('id' in session) and (session['id'] == clientDataDict['data']['sessionId']))]) < 1)):
+            print('Exception: Session Id does not match')
+            # Authencation Failes, Username or password not matched
+            responseData['data']['isAuthencatedUser'] = 'false'
+            responseData['data']['message-type'] = 'CLOSE'
+
         else:
             # hand shaking is done
             # varify token
@@ -162,7 +172,7 @@ def server_program():
 
                     # convert the encryted data from byte to int
                     byteToInt = int.from_bytes(encrypted, "big")
-                    responseData['data']['data'] = byteToInt
+                    responseData['data']['data'] = patternToEncrypt(byteToInt)
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -175,7 +185,7 @@ def server_program():
             print('receive connection close request from client, so terminate session')
             break
         messages.append(responseData)
-        print('SENDING:', responseData['data'])
+        print('Sending:', json.dumps(responseData, indent=4))
         # send data to the client
         conn.send(bytes(str(responseData), encoding="utf-8"))
     conn.close()  # close the connection
