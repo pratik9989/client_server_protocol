@@ -1,4 +1,4 @@
-# Client Server Protol using Python Socket With AES and SSL
+# Client Server Protocol using Python Socket With AES and SSL
 
 ## Usage
 1. Install required library using following command
@@ -38,7 +38,7 @@
 10. **jwt**: Used to generate jwt token from username and password
 11. **AES**: Used to encrypt/ decrypr data passes in DATA_RESPONSE
 
-## How code Works(Flow):
+## How code works(Flow):
 1. Client Send HELLO message with username, password and MAC address
 
 2. Server match username and password.
