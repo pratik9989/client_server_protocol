@@ -1,10 +1,7 @@
 import socket
 import json
 import time
-import datetime
 from threading import Timer
-import sys
-import hashlib
 from Crypto.Cipher import AES
 import ssl
 import uuid, re
@@ -23,12 +20,18 @@ def patternToDecrypt(val):
 def convertIntToByte(data):
     return data.to_bytes((data.bit_length() + 7) // 8, 'big')
     
-def decodeData(client_socket):
+def sendReceiveData(client_socket, dataToSend):
+    client_socket.write(bytes(str(dataToSend), encoding="utf-8"))  # send message
+    # empty dataToSend after sending message
+    dataToSend = {
+        "header":{},
+        "data":{}
+    }
     data = client_socket.recv(1024)  # receive response
     data = data.decode("utf-8")
     json_acceptable_string = data.replace("'", "\"")
     d = json.loads(json_acceptable_string)
-    return d
+    return d, dataToSend
 
 def client_program():
     host = socket.gethostname()  # as both code is running on same pc
@@ -71,15 +74,8 @@ def client_program():
     print('\n')
     print('Sending:', dataToSend['data'])
 
-    # Send data to server
-    client_socket.write(
-        bytes(str(dataToSend), encoding="utf-8"))  # send message
-    # empty dataToSend after sending message
-    dataToSend = {
-        "header":{},
-        "data":{}
-    }
-    response = decodeData(client_socket)
+    # Send and receive data from server
+    response, dataToSend = sendReceiveData(client_socket, dataToSend)
     print('Received:', response)
     print('\n')
 
@@ -96,9 +92,6 @@ def client_program():
             sessionId = response['data']['sessionId']
             # encryption algorithm
             obj_dec = encryption(key1, key2)
-            # after setting key in local variable we don't need to send key again and again
-            # response['data'].pop('key1')
-            # response['data'].pop('key2')
 
             while True:
                 # send token everytime in header, So that server can verify client
@@ -127,14 +120,8 @@ def client_program():
                 dataToSend['data']['sequence'] = sequence
                 # dataToSend['data']['sequence'] = str(int(dataToSend['data']['sequence']) + 1)
                 print('Sending:', dataToSend['data'])
-                client_socket.write(bytes(str(dataToSend), encoding="utf-8"))  # send message
-                # empty dataToSend after sending message
-                dataToSend = {
-                            "header":{},
-                            "data":{}
-                        }
-                # get response
-                dataResponse = decodeData(client_socket)
+                # Send and receive data from server
+                dataResponse, dataToSend = sendReceiveData(client_socket, dataToSend)
 
                 # close connection if server send close message
                 if (dataResponse['data']['message-type'] == 'CLOSE'):
