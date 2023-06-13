@@ -56,7 +56,7 @@ def client_program():
 
     client_socket.connect((host, port))  # connect to the server
 
-    duration = 0.5  # Duration is in minute.
+    duration = 30  # Duration is in minute.
     timeoutTime = time.time() + 60*duration
 
     # first time client enter message, username and password send hello message(Hand shaking)
@@ -141,7 +141,7 @@ def client_program():
                 print(f"Decrypted data received in DATA_RESPONSE: {decrypted.decode('utf-8')}")
                 print('\n')
                 # sleep for 30 second
-                time.sleep(3)
+                time.sleep(30)
         except Exception as e:
             if(type(e).__name__ == "KeyError"):
                 print('*******************Error***************************')
