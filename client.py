@@ -46,16 +46,17 @@ def client_program():
     sequence = 0
     # Current session ID
     sessionId = None
-
     
-    c_socket = socket.socket()  # instantiate
-    # provide full path to the certificate file location
-    client_socket = ssl.wrap_socket(
-        sock=c_socket, cert_reqs=ssl.CERT_REQUIRED, ca_certs='cert.crt', do_handshake_on_connect=True)
-    # the above function "wraps" the socket created with the security layer of signed certificate
+    try:
+        c_socket = socket.socket()  # instantiate
+        # provide full path to the certificate file location
+        client_socket = ssl.wrap_socket(
+            sock=c_socket, cert_reqs=ssl.CERT_REQUIRED, ca_certs='cert.crt', do_handshake_on_connect=True)
+        # the above function "wraps" the socket created with the security layer of signed certificate
 
-    client_socket.connect((host, port))  # connect to the server
-
+        client_socket.connect((host, port))  # connect to the server
+    except Exception as e:
+        print("Exception in socket initialization:", str(e))
     duration = 30  # Duration is in minute.
     timeoutTime = time.time() + 60*duration
 

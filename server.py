@@ -132,9 +132,9 @@ def server_program():
                     payload=payload,
                     key=authencationKey
                 )
-                confirmedClients.append(str(address))
+                confirmedClients.append(address[0])
                 lastSessionId = lastSessionId+1
-                sessions.append({"id":(lastSessionId), "mac":clientDataDict['header']['MAC'], "ip":str(address)})
+                sessions.append({"id":(lastSessionId), "mac":clientDataDict['header']['MAC'], "ip":address[0]})
                 responseData['data']['sessionId'] = lastSessionId
 
                 responseData['data']['message-type'] = f"{str(clientDataDict['data']['message-type'])}_ACK"
@@ -154,7 +154,7 @@ def server_program():
             # hand shaking is done
             # varify token
             try:
-                user = varifyTokenAndSession(clientDataDict, sessions, str(address))
+                user = varifyTokenAndSession(clientDataDict, sessions, address[0])
                 if (clientDataDict['data']['message-type'] == 'DATA_REQUEST'):
                 
                     responseData['data']['sessionId'] = clientDataDict['data']['sessionId']
