@@ -142,7 +142,8 @@ def client_program():
                 decrypted = obj_dec.decrypt(convertIntToByte(patternToDecrypt(dataResponse['data']['data'])))
                 print(f"Decrypted data received in DATA_RESPONSE: {decrypted.decode('utf-8')}")
                 print('\n')
-                # sleep for 30 second
+
+                # sleep for 30 second(send DATA_REQUEST every 30 seconds)
                 time.sleep(30)
         except Exception as e:
             if(type(e).__name__ == "KeyError"):
