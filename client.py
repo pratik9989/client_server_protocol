@@ -56,6 +56,8 @@ def client_program():
         client_socket.connect((host, port))  # connect to the server
     except Exception as e:
         print("Exception in socket initialization:", str(e))
+        
+    # set timeout in minutes
     duration = 30  # Duration is in minute.
     timeoutTime = time.time() + 60*duration
 
@@ -72,7 +74,7 @@ def client_program():
     dataToSend['data']['sequence'] = sequence
     dataToSend['header']['MAC'] = getMac()
     print('\n')
-    print('Sending:', json.dumps(dataToSend['data'], indent=4))
+    print('Sending:', json.dumps(dataToSend, indent=4))
 
     # Send and receive data from server
     response, dataToSend = sendReceiveData(client_socket, dataToSend)
@@ -107,7 +109,7 @@ def client_program():
                     dataToSend['data']['sequence'] = sequence
                     # dataToSend['data']['sequence'] = str(int(dataToSend['data']['sequence']) + 1)
                     dataToSend['data']['isConnectionClose'] = 'True'
-                    print('Sending:', json.dumps(dataToSend['data'], indent=4))
+                    print('Sending:', json.dumps(dataToSend, indent=4))
                     client_socket.write(
                         bytes(str(dataToSend), encoding="utf-8"))  # send message
                     # client_socket.close()
@@ -119,7 +121,7 @@ def client_program():
                 sequence = sequence + 1
                 dataToSend['data']['sequence'] = sequence
                 # dataToSend['data']['sequence'] = str(int(dataToSend['data']['sequence']) + 1)
-                print('Sending:', json.dumps(dataToSend['data'], indent=4))
+                print('Sending:', json.dumps(dataToSend, indent=4))
                 # Send and receive data from server
                 dataResponse, dataToSend = sendReceiveData(client_socket, dataToSend)
 
