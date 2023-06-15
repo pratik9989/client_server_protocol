@@ -11,6 +11,7 @@ import os
 # external Library
 import jwt
 from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 
 keyFile = "./priv.pem"  # provide full path to the private key file location
 certFile = "./cert.crt"  # provide full path to the Certificate file location
@@ -41,7 +42,7 @@ def inatilizeEnyryption(IV=IV):
     enc = AES.new(key, AES.MODE_CFB, IV)
     return key, enc
 
-# add one more layer of encryption(we add 1269 in cinverted integer, so if someone steal data then he/she can not decode exact value)
+# add one more layer of encryption(we add 1269 in cinverted integer, so if attacker get data then he/she can not decode exact value)
 def patternToEncrypt(val):
     return (val + 1269)
 
@@ -168,7 +169,9 @@ def server_program():
                     responseData['data']['message-type'] = 'DATA_RESPONSE'
                     # encrypting the data to be sent using the AES object we created
                     string = get_random_string(8)
-                    encrypted = obj_enc.encrypt(string.encode('utf-8'))
+                    print('Plain text data', string)
+                    # padding adds empty bytes to the end of your string until it’s the correct number of bytes long. block_size is 16 byte
+                    encrypted = obj_enc.encrypt(pad(string.encode('utf-8'), AES.block_size))
 
                     # convert the encryted data from byte to int
                     byteToInt = int.from_bytes(encrypted, "big")

@@ -1,7 +1,6 @@
 import socket
 import json
 import time
-from threading import Timer
 from Crypto.Cipher import AES
 import ssl
 import uuid, re
