@@ -28,7 +28,7 @@
 ## Known errors:
     ModuleNotFoundError: No module named 'Crypto'
 
-#### Even after installng libraried If you got this error Please run below commands in your terminal
+#### Even after installng **pycryptodome** library If you got the above error, Please run below commands in your terminal
 
 ### **Solution:**
     pip uninstall crypto 
