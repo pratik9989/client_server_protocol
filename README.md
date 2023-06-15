@@ -25,6 +25,17 @@
 
     Password = **test**
 
+## Known errors:
+    ModuleNotFoundError: No module named 'Crypto'
+
+#### Even after installng libraried If you got this error Please run below commands in your terminal
+
+### **Solution:**
+    pip uninstall crypto 
+    pip uninstall pycrypto 
+    pip install pycryptodome
+    
+
 ## Libraries used:
 1. **socket**: used for client server communication
 2. **json**: used to convert received data from string to json
